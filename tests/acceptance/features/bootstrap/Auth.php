@@ -28,7 +28,6 @@ require __DIR__ . '/../../../../lib/composer/autoload.php';
  * Authentication functions
  */
 trait Auth {
-
 	private $clientToken;
 	private $appToken;
 	private $tokenAuthHasBeenSet = false;
@@ -112,7 +111,7 @@ trait Auth {
 		$request->setHeader('requesttoken', $this->requestToken);
 		$request->setHeader('X-Requested-With', 'XMLHttpRequest');
 		$this->response = $this->client->send($request);
-		$this->appToken = json_decode($this->response->getBody()->getContents())->token;
+		$this->appToken = \json_decode($this->response->getBody()->getContents())->token;
 	}
 
 	/**
@@ -145,7 +144,7 @@ trait Auth {
 			]
 			]
 		);
-		$this->clientToken = json_decode($resp->getBody()->getContents())->token;
+		$this->clientToken = \json_decode($resp->getBody()->getContents())->token;
 	}
 
 	/**
@@ -160,7 +159,7 @@ trait Auth {
 	 */
 	public function userRequestsURLWithUsingBasicAuth($user, $url, $method) {
 		$authString = $user . ':' . $this->getPasswordForUser($user);
-		$this->sendRequest($url, $method, 'basic ' . base64_encode($authString));
+		$this->sendRequest($url, $method, 'basic ' . \base64_encode($authString));
 	}
 
 	/**
@@ -177,7 +176,7 @@ trait Auth {
 		$this->sendRequest(
 			$url,
 			$method,
-			'basic ' . base64_encode($user . ':' . $this->clientToken)
+			'basic ' . \base64_encode($user . ':' . $this->clientToken)
 		);
 	}
 
@@ -302,5 +301,4 @@ trait Auth {
 			$this->tokenAuthHasBeenSet = false;
 		}
 	}
-
 }

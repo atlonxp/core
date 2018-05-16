@@ -27,7 +27,6 @@ use TestHelpers\LoggingHelper;
  * Logging trait
  */
 trait Logging {
-
 	private $oldLogLevel = null;
 	private $oldLogBackend = null;
 	private $oldLogTimezone = null;
@@ -50,27 +49,27 @@ trait Logging {
 		TableNode $expectedLogEntries
 	) {
 		//-1 because getRows gives also the header
-		$linesToRead = count($expectedLogEntries->getRows()) - 1;
+		$linesToRead = \count($expectedLogEntries->getRows()) - 1;
 		$logLines = LoggingHelper::tailFile(
 			LoggingHelper::getLogFilePath(),
 			$linesToRead
 		);
 		$lineNo = 0;
 		foreach ($expectedLogEntries as $expectedLogEntry) {
-			$logEntry = json_decode($logLines[$lineNo], true);
-			foreach (array_keys($expectedLogEntry) as $attribute) {
-				$expectedLogEntry [$attribute]
+			$logEntry = \json_decode($logLines[$lineNo], true);
+			foreach (\array_keys($expectedLogEntry) as $attribute) {
+				$expectedLogEntry[$attribute]
 					= $this->featureContext->substituteInLineCodes(
-						$expectedLogEntry [$attribute]
+						$expectedLogEntry[$attribute]
 					);
 				PHPUnit_Framework_Assert::assertArrayHasKey(
 					$attribute, $logEntry,
 					"could not find attribute: '" . $attribute .
-					"' in log entry: '" . $logLines [$lineNo] . "'"
+					"' in log entry: '" . $logLines[$lineNo] . "'"
 				);
-				if ($expectedLogEntry [$attribute] !== "") {
+				if ($expectedLogEntry[$attribute] !== "") {
 					PHPUnit_Framework_Assert::assertEquals(
-						$expectedLogEntry [$attribute], $logEntry [$attribute],
+						$expectedLogEntry[$attribute], $logEntry[$attribute],
 						"log entry:\n" . $logLines[$lineNo] . "\n"
 					);
 				}
@@ -98,18 +97,18 @@ trait Logging {
 	public function theLogFileShouldNotContainAnyLogEntriesWithTheseAttributes(
 		TableNode $logEntriesExpectedNotToExist
 	) {
-		$logLines = file(LoggingHelper::getLogFilePath());
+		$logLines = \file(LoggingHelper::getLogFilePath());
 		foreach ($logLines as $logLine) {
-			$logEntries = json_decode($logLine, true);
+			$logEntries = \json_decode($logLine, true);
 			foreach ($logEntriesExpectedNotToExist as $logEntryExpectedNotToExist) {
-				foreach (array_keys($logEntryExpectedNotToExist) as $attribute) {
-					$logEntryExpectedNotToExist [$attribute]
+				foreach (\array_keys($logEntryExpectedNotToExist) as $attribute) {
+					$logEntryExpectedNotToExist[$attribute]
 						= $this->featureContext->substituteInLineCodes(
-							$logEntryExpectedNotToExist [$attribute]
+							$logEntryExpectedNotToExist[$attribute]
 						);
-					if (isset($logEntries [$attribute])
-						&& ($logEntryExpectedNotToExist [$attribute] === ""
-						|| $logEntryExpectedNotToExist [$attribute] === $logEntries [$attribute])
+					if (isset($logEntries[$attribute])
+						&& ($logEntryExpectedNotToExist[$attribute] === ""
+						|| $logEntryExpectedNotToExist[$attribute] === $logEntries[$attribute])
 					) {
 						$match = true;
 					} else {
@@ -192,17 +191,17 @@ trait Logging {
 	 * @return void
 	 */
 	public function tearDownScenarioLogging() {
-		if (!is_null($this->oldLogLevel)
+		if ($this->oldLogLevel !== null
 			&& $this->oldLogLevel !== LoggingHelper::getLogLevel()
 		) {
 			LoggingHelper::setLogLevel($this->oldLogLevel);
 		}
-		if (!is_null($this->oldLogBackend)
+		if ($this->oldLogBackend !== null
 			&& $this->oldLogBackend !== LoggingHelper::getLogBackend()
 		) {
 			LoggingHelper::setLogBackend($this->oldLogBackend);
 		}
-		if (!is_null($this->oldLogTimezone)
+		if ($this->oldLogTimezone !== null
 			&& $this->oldLogTimezone !== LoggingHelper::getLogTimezone()
 		) {
 			LoggingHelper::setLogTimezone($this->oldLogTimezone);

@@ -104,7 +104,6 @@ class ShareControllerTest extends \Test\TestCase {
 			$this->federatedShareProvider
 		);
 
-
 		// Store current user
 		$this->oldUser = \OC_User::getUser();
 
@@ -121,7 +120,9 @@ class ShareControllerTest extends \Test\TestCase {
 		\OC_User::setUserId('');
 		Filesystem::tearDown();
 		$user = \OC::$server->getUserManager()->get($this->user);
-		if ($user !== null) { $user->delete(); }
+		if ($user !== null) {
+			$user->delete();
+		}
 		\OC_User::setIncognitoMode(false);
 
 		\OC::$server->getSession()->set('public_link_authenticated', '');
@@ -255,11 +256,11 @@ class ShareControllerTest extends \Test\TestCase {
 			->method('set');
 
 		$hookListner = $this->getMockBuilder('Dummy')->setMethods(['access'])->getMock();
-		\OCP\Util::connectHook('OCP\Share', 'share_link_access',  $hookListner, 'access');
+		\OCP\Util::connectHook('OCP\Share', 'share_link_access', $hookListner, 'access');
 
 		$hookListner->expects($this->once())
 			->method('access')
-			->with($this->callback(function(array $data) {
+			->with($this->callback(function (array $data) {
 				return $data['itemType'] === 'file' &&
 					$data['itemSource'] === 100 &&
 					$data['uidOwner'] === 'initiator' &&
@@ -306,7 +307,6 @@ class ShareControllerTest extends \Test\TestCase {
 		$expectedResponse = new RedirectResponse('redirect');
 		$this->assertEquals($expectedResponse, $response);
 	}
-
 
 	public function testShowShare() {
 		$owner = $this->createMock('OCP\IUser');
@@ -432,7 +432,6 @@ class ShareControllerTest extends \Test\TestCase {
 
 		$this->shareController->showShare('token');
 	}
-
 
 	public function testDownloadShare() {
 		$share = $this->createMock('\OCP\Share\IShare');

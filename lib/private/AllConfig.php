@@ -67,7 +67,7 @@ class AllConfig implements \OCP\IConfig {
 	/**
 	 * @param SystemConfig $systemConfig
 	 */
-	function __construct(SystemConfig $systemConfig) {
+	public function __construct(SystemConfig $systemConfig) {
 		$this->userCache = new CappedMemoryCache();
 		$this->systemConfig = $systemConfig;
 	}
@@ -86,7 +86,7 @@ class AllConfig implements \OCP\IConfig {
 	 * because the database connection was created with an uninitialized config
 	 */
 	private function fixDIInit() {
-		if($this->connection === null) {
+		if ($this->connection === null) {
 			$this->connection = \OC::$server->getDatabaseConnection();
 		}
 	}
@@ -194,7 +194,6 @@ class AllConfig implements \OCP\IConfig {
 		\OC::$server->getAppConfig()->deleteApp($appName);
 	}
 
-
 	/**
 	 * Set a user defined value
 	 *
@@ -207,7 +206,7 @@ class AllConfig implements \OCP\IConfig {
 	 * @throws \UnexpectedValueException when trying to store an unexpected value
 	 */
 	public function setUserValue($userId, $appName, $key, $value, $preCondition = null) {
-		if (!is_int($value) && !is_float($value) && !is_string($value)) {
+		if (!\is_int($value) && !\is_float($value) && !\is_string($value)) {
 			throw new \UnexpectedValueException('Only integers, floats and strings are allowed as value');
 		}
 
@@ -266,7 +265,7 @@ class AllConfig implements \OCP\IConfig {
 	public function getUserKeys($userId, $appName) {
 		$data = $this->getUserValues($userId);
 		if (isset($data[$appName])) {
-			return array_keys($data[$appName]);
+			return \array_keys($data[$appName]);
 		} else {
 			return [];
 		}
@@ -368,21 +367,21 @@ class AllConfig implements \OCP\IConfig {
 		// TODO - FIXME
 		$this->fixDIInit();
 
-		if (empty($userIds) || !is_array($userIds)) {
+		if (empty($userIds) || !\is_array($userIds)) {
 			return [];
 		}
 
-		$chunkedUsers = array_chunk($userIds, 50, true);
-		$placeholders50 = implode(',', array_fill(0, 50, '?'));
+		$chunkedUsers = \array_chunk($userIds, 50, true);
+		$placeholders50 = \implode(',', \array_fill(0, 50, '?'));
 
 		$userValues = [];
 		foreach ($chunkedUsers as $chunk) {
 			$queryParams = $chunk;
 			// create [$app, $key, $chunkedUsers]
-			array_unshift($queryParams, $key);
-			array_unshift($queryParams, $appName);
+			\array_unshift($queryParams, $key);
+			\array_unshift($queryParams, $appName);
 
-			$placeholders = (sizeof($chunk) == 50) ? $placeholders50 :  implode(',', array_fill(0, sizeof($chunk), '?'));
+			$placeholders = (\sizeof($chunk) == 50) ? $placeholders50 :  \implode(',', \array_fill(0, \sizeof($chunk), '?'));
 
 			$query    = 'SELECT `userid`, `configvalue` ' .
 						'FROM `*PREFIX*preferences` ' .
@@ -420,7 +419,6 @@ class AllConfig implements \OCP\IConfig {
 				'configkey', $queryBuilder->createNamedParameter($key))
 			)
 			->andWhere($queryBuilder->expr()->isNotNull('configvalue'));
-
 
 		if ($this->connection->getDatabasePlatform() instanceof OraclePlatform) {
 			//oracle can only compare the first 4000 bytes of a CLOB column

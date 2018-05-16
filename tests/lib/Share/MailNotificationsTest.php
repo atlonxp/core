@@ -48,7 +48,6 @@ class MailNotificationsTest extends TestCase {
 	/** @var IURLGenerator | \PHPUnit_Framework_MockObject_MockObject */
 	private $urlGenerator;
 
-
 	public function setUp() {
 		parent::setUp();
 
@@ -66,8 +65,8 @@ class MailNotificationsTest extends TestCase {
 
 		$this->l10n->expects($this->any())
 			->method('t')
-			->will($this->returnCallback(function($text, $parameters = []) {
-				return vsprintf($text, $parameters);
+			->will($this->returnCallback(function ($text, $parameters = []) {
+				return \vsprintf($text, $parameters);
 			}));
 
 		$this->defaults
@@ -83,7 +82,6 @@ class MailNotificationsTest extends TestCase {
 				->expects($this->once())
 				->method('getDisplayName')
 				->willReturn('<evil>TestUser</evil>');
-
 	}
 
 	public function testSendLinkShareMailWithoutReplyTo() {
@@ -304,7 +302,6 @@ class MailNotificationsTest extends TestCase {
 		$recipientList = [$recipient];
 		$result = $mailNotifications->sendInternalShareMail($recipientList, '3', 'file');
 		$this->assertSame([], $result);
-
 	}
 
 	public function emptinessProvider() {
@@ -355,7 +352,6 @@ class MailNotificationsTest extends TestCase {
 		$recipientList = [$recipient, $recipient2];
 		$result = $mailNotifications->sendInternalShareMail($recipientList, '3', 'file');
 		$this->assertSame(['No mail 1', 'No mail 2'], $result);
-
 	}
 
 	/**

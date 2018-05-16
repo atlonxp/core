@@ -33,9 +33,9 @@ use TestHelpers\TagsHelper;
 trait Tags {
 
 	/**
-	 * @var array 
+	 * @var array
 	 */
-	private $createdTags = array();
+	private $createdTags = [];
 
 	/**
 	 * @param string $user
@@ -59,7 +59,7 @@ trait Tags {
 			);
 			$lastTagId = $createdTag['lastTagId'];
 			$this->response = $createdTag['HTTPResponse'];
-			array_push($this->createdTags, $lastTagId);
+			\array_push($this->createdTags, $lastTagId);
 		} catch (BadResponseException $e) {
 			$this->response = $e->getResponse();
 		}
@@ -76,10 +76,10 @@ trait Tags {
 		$tagDisplayName = $tagData['{http://owncloud.org/ns}display-name'];
 		$userVisible = ($userAttributes[0]) ? 'true' : 'false';
 		$userAssignable = ($userAttributes[1]) ? 'true' : 'false';
-		if (($tagData['{http://owncloud.org/ns}user-visible'] !== $userVisible) 
+		if (($tagData['{http://owncloud.org/ns}user-visible'] !== $userVisible)
 			|| ($tagData['{http://owncloud.org/ns}user-assignable'] !== $userAssignable)
 		) {
-				PHPUnit_Framework_Assert::fail(
+			PHPUnit_Framework_Assert::fail(
 					"tag $tagDisplayName is not of type $type"
 				);
 		}
@@ -176,7 +176,7 @@ trait Tags {
 	public function theFollowingTagsShouldExistFor($user, TableNode $table) {
 		foreach ($table->getRowsHash() as $rowDisplayName => $rowType) {
 			$tagData = $this->requestTagByDisplayName($user, $rowDisplayName);
-			if (is_null($tagData)) {
+			if ($tagData === null) {
 				PHPUnit_Framework_Assert::fail(
 					"tag $rowDisplayName is not in propfind answer"
 				);
@@ -219,7 +219,7 @@ trait Tags {
 		$this->assertTypeOfTag($tagData, $type);
 		if ($shouldOrNot === 'should') {
 			$expected = 'true';
-		} else if ($shouldOrNot === 'should not') {
+		} elseif ($shouldOrNot === 'should not') {
 			$expected = 'false';
 		} else {
 			throw new \Exception(
@@ -250,7 +250,7 @@ trait Tags {
 		$this->assertTypeOfTag($tagData, $type);
 		PHPUnit_Framework_Assert::assertEquals(
 			$tagData['{http://owncloud.org/ns}groups'], $groups,
-			'Tag has groups "' . $tagData['{http://owncloud.org/ns}groups'] . '" instead of the expected "' . $groups . '"' 
+			'Tag has groups "' . $tagData['{http://owncloud.org/ns}groups'] . '" instead of the expected "' . $groups . '"'
 		);
 	}
 
@@ -264,9 +264,9 @@ trait Tags {
 	 * @throws \Exception
 	 */
 	public function tagsShouldExistFor($count, $user) {
-		if ((int)$count !== count($this->requestTagsForUser($user))) {
+		if ((int)$count !== \count($this->requestTagsForUser($user))) {
 			throw new \Exception(
-				"Expected $count tags, got " . count($this->requestTagsForUser($user))
+				"Expected $count tags, got " . \count($this->requestTagsForUser($user))
 			);
 		}
 	}
@@ -381,11 +381,11 @@ trait Tags {
 		try {
 			$this->response = TagsHelper::tag(
 				$this->getBaseUrl(),
-				$taggingUser, 
+				$taggingUser,
 				$this->getPasswordForUser($taggingUser),
 				$tagName, $fileName, $fileOwner, $this->getDavPathVersion('systemtags')
 			);
-		} catch ( BadResponseException $e ) {
+		} catch (BadResponseException $e) {
 			$this->response = $e->getResponse();
 		}
 	}
@@ -398,7 +398,7 @@ trait Tags {
 	 * @return \Sabre\HTTP\ResponseInterface
 	 */
 	private function requestTagsForFile($user, $fileName, $sharingUser = null) {
-		if (!is_null($sharingUser)) {
+		if ($sharingUser !== null) {
 			$fileID = $this->getFileIdForPath($sharingUser, $fileName);
 		} else {
 			$fileID = $this->getFileIdForPath($user, $fileName);
@@ -455,10 +455,10 @@ trait Tags {
 	) {
 		$tagList = $this->requestTagsForFile($sharingUser, $fileName);
 		//Check if we are looking for no tags
-		if ((!is_array($tagList)) && ($table->getRowAsString(0) === '|  |')) {
+		if ((!\is_array($tagList)) && ($table->getRowAsString(0) === '|  |')) {
 			return true;
 		}
-		array_shift($tagList);
+		\array_shift($tagList);
 		$found = false;
 		foreach ($table->getRowsHash() as $rowDisplayName => $rowType) {
 			foreach ($tagList as $path => $tagData) {
@@ -471,7 +471,7 @@ trait Tags {
 				}
 			}
 			if ($found === false) {
-					PHPUnit_Framework_Assert::fail(
+				PHPUnit_Framework_Assert::fail(
 						"tag $rowDisplayName is not in propfind answer"
 					);
 			}

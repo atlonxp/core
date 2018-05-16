@@ -21,14 +21,12 @@
 
 namespace Test\Files\Storage\Wrapper;
 
-
 use OC\Files\Storage\Wrapper\Checksum;
 
 /**
  * @group DB
  */
-class ChecksumTest extends \Test\TestCase
-{
+class ChecksumTest extends \Test\TestCase {
 	/**
 	 * @var \OC\Files\Storage\Temporary
 	 */
@@ -49,7 +47,6 @@ class ChecksumTest extends \Test\TestCase
 		]);
 	}
 
-
 	public function testFilePutContentsCalculatesChecksum() {
 		$this->instance->file_put_contents('/foo.txt', 'somedata');
 		$metaData = $this->instance->getMetaData('/foo.txt');
@@ -59,28 +56,24 @@ class ChecksumTest extends \Test\TestCase
 	}
 
 	public function testWriteToFileHandleCalculatesChecksum() {
-		$handle = $this->instance->fopen('/foo.txt','w+');
+		$handle = $this->instance->fopen('/foo.txt', 'w+');
 
 		$this->assertInternalType('resource', $handle);
-		$this->assertNotFalse(fwrite($handle, self::TEST_DATA));
-		$this->assertNotFalse(fclose($handle));
+		$this->assertNotFalse(\fwrite($handle, self::TEST_DATA));
+		$this->assertNotFalse(\fclose($handle));
 
 		$metaData = $this->instance->getMetaData('/foo.txt');
-
 
 		$this->assertArrayHasKey('checksum', $metaData);
 		$this->assertEquals(self::EXPECTED_CHECKSUMS, $metaData['checksum']);
 	}
 
-
-
 	public function testReadFromFileHandleOnNewFileCalculatesChecksum() {
-
 		$this->sourceStorage->file_put_contents('/foo.txt', self::TEST_DATA);
 
 		$handle = $this->instance->fopen('/foo.txt', "r");
-		$data = fread($handle, $this->sourceStorage->filesize('/foo.txt'));
-		fclose($handle);
+		$data = \fread($handle, $this->sourceStorage->filesize('/foo.txt'));
+		\fclose($handle);
 
 		$this->assertEquals(self::TEST_DATA, $data);
 
@@ -103,8 +96,7 @@ class ChecksumTest extends \Test\TestCase
 	/**
 	 * @depends testFilePutContentsCalculatesChecksum
 	 */
-	public function testFileChangeChangesChecksum()
-	{
+	public function testFileChangeChangesChecksum() {
 		$this->instance->file_put_contents('/foo.txt', self::TEST_DATA);
 		$this->instance->file_put_contents('/foo.txt', 'otherdata');
 
@@ -116,4 +108,3 @@ class ChecksumTest extends \Test\TestCase
 		);
 	}
 }
-

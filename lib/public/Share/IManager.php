@@ -112,7 +112,6 @@ interface IManager {
 	 */
 	public function getSharesBy($userId, $shareType, $path = null, $reshares = false, $limit = 50, $offset = 0);
 
-
 	/**
 	 * Get shares shared with $userId for specified share types.
 	 * Filter by $node if provided
@@ -324,5 +323,4 @@ interface IManager {
 	 * @since 9.0.0
 	 */
 	public function outgoingServer2ServerSharesAllowed();
-
 }

@@ -100,8 +100,8 @@ class MailNotifications {
 	 * @return array list of individual addresses
 	 */
 	private function _mailStringToArray($mailsstring) {
-		$sanatised  = str_replace([', ', '; ', ',', ';', ' '], ',', $mailsstring);
-		$mail_array = explode(',', $sanatised);
+		$sanatised  = \str_replace([', ', '; ', ',', ';', ' '], ',', $mailsstring);
+		$mail_array = \explode(',', $sanatised);
 
 		return $mail_array;
 	}
@@ -127,7 +127,7 @@ class MailNotifications {
 			}
 
 			$items = $this->getItemSharedWithUser($itemSource, $itemType, $recipient);
-			$filename = trim($items[0]['file_target'], '/');
+			$filename = \trim($items[0]['file_target'], '/');
 			$expiration = null;
 			if (isset($items[0]['expiration'])) {
 				try {
@@ -168,7 +168,7 @@ class MailNotifications {
 							$this->defaults->getName()
 						]),
 					]);
-				if(!is_null($this->replyTo)) {
+				if ($this->replyTo !== null) {
 					$message->setReplyTo([$this->replyTo]);
 				}
 
@@ -180,10 +180,9 @@ class MailNotifications {
 		}
 
 		return $noMail;
-
 	}
 
-	public function sendLinkShareMail($recipient, $filename, $link, $expiration, $personalNote = null, $options = array()) {
+	public function sendLinkShareMail($recipient, $filename, $link, $expiration, $personalNote = null, $options = []) {
 		$subject = (string)$this->l->t('%s shared »%s« with you', [$this->senderDisplayName, $filename]);
 		list($htmlBody, $textBody) = $this->createMailBody($filename, $link, $expiration, $personalNote);
 
@@ -200,8 +199,7 @@ class MailNotifications {
 	 * @param int $expiration expiration date (timestamp)
 	 * @return string[] $result of failed recipients
 	 */
-	public function sendLinkShareMailFromBody($recipient, $subject, $htmlBody, $textBody, $options = array()) {
-
+	public function sendLinkShareMailFromBody($recipient, $subject, $htmlBody, $textBody, $options = []) {
 		$recipients = [];
 		if ($recipient !== null) {
 			$recipients    = $this->_mailStringToArray($recipient);
@@ -230,7 +228,7 @@ class MailNotifications {
 						$this->defaults->getName()
 					]),
 			]);
-			if(!is_null($this->replyTo)) {
+			if ($this->replyTo !== null) {
 				$message->setReplyTo([$this->replyTo]);
 			}
 
@@ -258,7 +256,7 @@ class MailNotifications {
 		$html->assign('link', $link);
 		$html->assign('user_displayname', $this->senderDisplayName);
 		$html->assign('filename', $filename);
-		$html->assign('expiration',  $formattedDate);
+		$html->assign('expiration', $formattedDate);
 		if ($personalNote !== null && $personalNote !== '') {
 			$html->assign('personal_note', $personalNote);
 		}
@@ -286,5 +284,4 @@ class MailNotifications {
 	protected function getItemSharedWithUser($itemSource, $itemType, $recipient) {
 		return Share::getItemSharedWithUser($itemType, $itemSource, $recipient->getUID());
 	}
-
 }
