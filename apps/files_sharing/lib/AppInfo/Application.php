@@ -132,7 +132,7 @@ class Application extends App {
 		/*
 		 * Register trashbin service
 		 */
-		$container->registerService('Hooks', function($c) {
+		$container->registerService('Hooks', function ($c) {
 			return new Hooks(
 				$c->getServer()->getLazyRootFolder(),
 				$c->getServer()->getUrlGenerator(),
@@ -164,7 +164,7 @@ class Application extends App {
 
 		$dispatcher = $container->getServer()->getEventDispatcher();
 
-		$dispatcher->addListener(RegisterNotifierEvent::NAME, function(RegisterNotifierEvent $event) use ($container) {
+		$dispatcher->addListener(RegisterNotifierEvent::NAME, function (RegisterNotifierEvent $event) use ($container) {
 			$l10n = $container->getServer()->getL10N('files_sharing');
 			$event->registerNotifier($container->query(Notifier::class), 'files_sharing', $l10n->t('File sharing'));
 		});
