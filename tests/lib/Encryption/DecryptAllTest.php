@@ -24,13 +24,21 @@ namespace Test\Encryption;
 use OC\Encryption\DecryptAll;
 use OC\Encryption\Exceptions\DecryptionFailedException;
 use OC\Encryption\Manager;
+use OC\Encryption\Util;
 use OC\Files\FileInfo;
 use OC\Files\View;
+use OC\Memcache\ArrayCache;
+use OC\User\AccountMapper;
+use OC\User\SyncService;
 use OCA\Files_Sharing\SharedStorage;
 use OCP\Encryption\IEncryptionModule;
+use OCP\IAppConfig;
+use OCP\IConfig;
 use OCP\ILogger;
+use OCP\IUser;
 use OCP\IUserManager;
 use OCP\UserInterface;
+use OCP\Util\UserSearch;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
@@ -253,15 +261,16 @@ class DecryptAllTest extends TestCase {
 					$this->logger
 				]
 			)
-			->setMethods(['decryptUsersFiles'])
+			->setMethods(['decryptUsersFiles', 'prepareEncryptionModules'])
 			->getMock();
 
 		$this->invokePrivate($instance, 'input', [$this->inputInterface]);
 		$this->invokePrivate($instance, 'output', [$this->outputInterface]);
 
-		$function = function (IUser $user) {
+		/*$function = function (IUser $user) {
 			$users[] = $user->getUID();
-		};
+		};*/
+		\OC::$server->getAppConfig()->setValue('encryption', 'userSpecificKey', 1);
 
 		if (empty($user)) {
 			$progress = new ProgressBar($this->outputInterface);
@@ -271,6 +280,11 @@ class DecryptAllTest extends TestCase {
 			$this->userManager->expects($this->once())
 				->method('callForSeenUsers')
 				->will($this->returnCallback(function () use ($instance, $progress) {
+					if (\OC::$server->getAppConfig()->getValue('encryption', 'userSpecificKey', '0') !== 0) {
+						$instance->expects($this->any())
+							->method('prepareEncryptionModules')
+							->willReturn(true);
+					}
 					$this->invokePrivate($instance, 'decryptUsersFiles', ['user1', $progress, '']);
 					$this->invokePrivate($instance, 'decryptUsersFiles', ['user2', $progress, '']);
 				}));
