@@ -659,7 +659,7 @@ trait WebDav {
 	 * @param string $key
 	 * @param string $expectedValue
 	 *
-	 * @return int
+	 * @return void
 	 * @throws \Exception
 	 */
 	public function theSingleResponseShouldContainAPropertyWithValue(
@@ -677,7 +677,7 @@ trait WebDav {
 	 * @param string $expectedValue
 	 * @param string $altExpectedValue
 	 *
-	 * @return int
+	 * @return void
 	 * @throws \Exception
 	 */
 	public function theSingleResponseShouldContainAPropertyWithValueAndAlternative(
@@ -702,7 +702,7 @@ trait WebDav {
 
 		if ($expectedValue === "a_comment_url") {
 			if (\preg_match("#^/remote.php/dav/comments/files/([0-9]+)$#", $value)) {
-				return 0;
+				return;
 			} else {
 				throw new \Exception(
 					"Property \"$key\" found with value \"$value\", expected \"$expectedValue\""
@@ -744,9 +744,7 @@ trait WebDav {
 			}
 		}
 
-		if (\preg_match($regex, $value)) {
-			return 0;
-		} else {
+		if (!\preg_match($regex, $value)) {
 			throw new \Exception(
 				"Property \"$key\" found with value \"$value\", expected \"$regex\""
 			);
@@ -1343,7 +1341,7 @@ trait WebDav {
 	 * @param string $content
 	 * @param string $destination
 	 *
-	 * @return string
+	 * @return void
 	 */
 	public function userUploadsAFileWithContentTo(
 		$user, $content, $destination
@@ -1353,7 +1351,6 @@ trait WebDav {
 			$this->response = $this->makeDavRequest(
 				$user, "PUT", $destination, [], $file
 			);
-			return $this->response->getHeader('oc-fileid');
 		} catch (BadResponseException $e) {
 			// 4xx and 5xx responses cause an exception
 			$this->response = $e->getResponse();
