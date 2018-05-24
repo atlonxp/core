@@ -487,7 +487,7 @@ class Session implements IUserSession, Emitter {
 	 * @throws LoginException if an app canceld the login process or the user is not enabled
 	 */
 	private function loginWithPassword($uid, $password) {
-		return $this->emittingCall(function () use (&$uid, &$password) {
+		return $this->emittingCall(function (&$afterArray) use (&$uid, &$password) {
 			$this->manager->emit('\OC\User', 'preLogin', [$uid, $password]);
 			$user = $this->manager->checkPassword($uid, $password);
 			if ($user === false) {
@@ -502,6 +502,7 @@ class Session implements IUserSession, Emitter {
 				$this->manager->emit('\OC\User', 'postLogin', [$user, $password]);
 				if ($this->isLoggedIn()) {
 					$this->prepareUserLogin($firstTimeLogin);
+					$afterArray['uid'] = $user->getUID();
 					return true;
 				} else {
 					// injecting l10n does not work - there is a circular dependency between session and \OCP\L10N\IFactory
